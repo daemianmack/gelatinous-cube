@@ -1,4 +1,4 @@
-(ns cloudnormity.util
+(ns gelatinous-cube.util
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]))
 

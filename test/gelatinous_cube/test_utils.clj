@@ -1,4 +1,4 @@
-(ns cloudnormity.test-utils
+(ns gelatinous-cube.test-utils
   (:require [clojure.test :as t]
             [datomic.client.api :as d]
             [datomic.dev-local :as dl])

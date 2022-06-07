@@ -1,9 +1,9 @@
-(ns cloudnormity.impl
-  (:require [cloudnormity.tx-sources :as tx-sources]
+(ns gelatinous-cube.impl
+  (:require [gelatinous-cube.tx-sources :as tx-sources]
             [clojure.spec.alpha :as s]
             [datomic.client.api :as d]
-            [cloudnormity.specs :as specs]
-            [cloudnormity.util :as u]))
+            [gelatinous-cube.specs :as specs]
+            [gelatinous-cube.util :as u]))
 
 
 (defn tx!
@@ -30,7 +30,7 @@
       seq
       boolean))
 
-(defn ensure-cloudnormity-schema
+(defn ensure-gelatinous-cube-schema
   [conn tracking-attr]
   (when-not (has-attr? conn tracking-attr)
     (let [tx-data [{:db/ident tracking-attr

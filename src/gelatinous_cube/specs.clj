@@ -1,6 +1,6 @@
-(ns cloudnormity.specs
+(ns gelatinous-cube.specs
   (:require [clojure.spec.alpha :as s]
-            [cloudnormity.tx-sources :as tx-sources]))
+            [gelatinous-cube.tx-sources :as tx-sources]))
 
 
 (s/def ::tx-data (s/coll-of map?))

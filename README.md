@@ -1,4 +1,8 @@
-# cloudnormity
+<p align="center">
+  <img width="400" src="public/gelatinous-cube.png">
+</p>
+
+# gelatinous cube
 
 A re-do of [conformity](https://github.com/avescodes/conformity) to
 work with Datomic Cloud, with some small deviations.
@@ -27,11 +31,11 @@ A sample config lives under `test-resources`.
   relationships manually.
 
 ##### External norm sources
-  Cloudnormity allows reference to resource files for schema; your
-  schema doesn't have to live within cloudnormity's config file.
+  gelatinous-cube allows reference to resource files for schema; your
+  schema doesn't have to live within gelatinous-cube's config file.
 
 ##### Extensible norm sources
-  Cloudnormity allows extension of the mechanism used to resolve
+  gelatinous-cube allows extension of the mechanism used to resolve
   config references into transaction data; your schema can reside in
   an S3 bucket, encrypted, written in a custom schema DSL.
   

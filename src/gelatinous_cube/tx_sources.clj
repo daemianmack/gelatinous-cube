@@ -1,5 +1,5 @@
-(ns cloudnormity.tx-sources
-  (:require [cloudnormity.util :as u]))
+(ns gelatinous-cube.tx-sources
+  (:require [gelatinous-cube.util :as u]))
 
 
 (defn dispatch

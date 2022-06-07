@@ -1,13 +1,13 @@
-(ns cloudnormity.api-test
+(ns gelatinous-cube.api-test
   (:require [clojure.edn :as edn]
             [clojure.test :refer [deftest is use-fixtures]]
             [clojure.set :as set]
             [clojure.string :as str]
-            [cloudnormity.api :as sut]
-            [cloudnormity.tx-sources :as tx-sources]
-            [cloudnormity.impl :as impl]
-            [cloudnormity.util :as u]
-            [cloudnormity.test-utils :as tu]
+            [gelatinous-cube.api :as sut]
+            [gelatinous-cube.tx-sources :as tx-sources]
+            [gelatinous-cube.impl :as impl]
+            [gelatinous-cube.util :as u]
+            [gelatinous-cube.test-utils :as tu]
             [datomic.client.api :as d]))
 
 

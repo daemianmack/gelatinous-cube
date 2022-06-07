@@ -1,8 +1,8 @@
-(ns cloudnormity.api
-  (:require [cloudnormity.impl :as impl]))
+(ns gelatinous-cube.api
+  (:require [gelatinous-cube.impl :as impl]))
 
 
-(def ^:dynamic *tracking-attr* :cloudnormity/conformed)
+(def ^:dynamic *tracking-attr* :gelatinous-cube/conformed)
 
 
 (defn ensure-norms
@@ -34,5 +34,5 @@
    (let [ensurable-norms (-> norm-maps
                              (norm-maps-by-name norm-names)
                              impl/conform!)]
-    (impl/ensure-cloudnormity-schema conn *tracking-attr*)
+    (impl/ensure-gelatinous-cube-schema conn *tracking-attr*)
     (ensure-norms conn ensurable-norms))))
