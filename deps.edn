@@ -1,14 +1,14 @@
 {:mvn/repos {"datomic-cloud" {:url "s3://datomic-releases-1fc2183a/maven/releases"}}
 
- :deps {org.clojure/clojure    {:mvn/version "1.10.0"}
-        org.clojure/spec.alpha {:mvn/version "0.2.176"}}
+ :deps {org.clojure/clojure    {:mvn/version "1.11.1"}
+        org.clojure/spec.alpha {:mvn/version "0.3.218"}}
 
  :paths ["src"]
 
  :aliases {:test {:extra-paths ["test" "test-resources"]
-                  :extra-deps  {com.datomic/client-cloud  {:mvn/version "0.8.81"}
-                                com.datomic/dev-local     {:mvn/version "0.9.172"}
+                  :extra-deps  {com.datomic/client-cloud  {:mvn/version "1.0.120"}
+                                com.datomic/dev-local     {:mvn/version "1.0.243"}
                                 com.cognitect/test-runner {:git/url "https://github.com/cognitect-labs/test-runner"
-                                                           :sha     "3cb0a9daf1cb746259dc8309b218f9211ad3b33b"}}
+                                                           :sha     "a85b3b02765fb68684ab9ee4a8598eacf7e471d2"}}
                   :main-opts   ["-m" "cognitect.test-runner"
                                 "-d" "test"]}}}
