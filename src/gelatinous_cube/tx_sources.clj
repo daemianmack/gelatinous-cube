@@ -39,13 +39,16 @@
   special structure) yet also gives `tx-data-for-norm` a dispatchable
   value at a predictable coordinate."
   [norm-map]
-  (let [meths (methods tx-data-for-norm)]
-    (reduce-kv
-     (fn [acc k v]
-       (if (contains? meths k)
-         (reduced (-> acc
-                      (assoc :tx-source [k v])
-                      (dissoc k)))
-         acc))
-     norm-map
-     norm-map)))
+  (let [meths   (methods tx-data-for-norm)
+        reorged (reduce-kv
+                 (fn [acc k v]
+                   (if (contains? meths k)
+                     (reduced (-> acc
+                                  (assoc :tx-source [k v])
+                                  (dissoc k)))
+                     acc))
+                 norm-map
+                 norm-map)]
+    (if-not (:tx-source reorged)
+      :clojure.spec.alpha/invalid
+      reorged)))

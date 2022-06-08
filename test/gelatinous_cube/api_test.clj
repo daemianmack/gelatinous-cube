@@ -120,7 +120,18 @@
     (is (new-idents= tu/*conn* idents-before [sut/*tracking-attr* :banans]))
     (is (conformed= tu/*conn* [:banans]))))
 
-(deftest ensure-conforms-validates-norm-maps
+(deftest ensure-conforms-fails-to-validate-unknown-tx-sources
+  (let [schema [{:db/ident :banans
+                 :db/valueType :db.type/string
+                 :db/cardinality :db.cardinality/one}]
+        encode (comp str/reverse pr-str)]
+    (is (thrown-with-data?
+         {:cognitect.anomalies/category :cognitect.anomalies/incorrect
+          :cognitect.anomalies/message "Norm config failed to validate."}
+         (sut/ensure-conforms tu/*conn* [{:name :banans
+                                          :tx-banans (encode schema)}])))))
+
+(deftest ensure-conforms-fails-to-validates-malformed-norm-maps
   (let [config (assoc-in config [2 :tx-data] ["this is not a norm map"])]
     (is (thrown-with-data?
          {:cognitect.anomalies/category :cognitect.anomalies/incorrect
