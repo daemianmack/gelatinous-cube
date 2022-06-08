@@ -111,7 +111,7 @@
         encode (comp str/reverse pr-str)
         decode (comp edn/read-string str/reverse)]
     (defmethod tx-sources/tx-data-for-norm :tx-banans
-      [conn {[_ payload] :tx-source}]
+      [conn {payload :tx-source}]
       (decode payload))
     (sut/ensure-conforms tu/*conn*
                          [{:name :banans :tx-banans (encode schema)}]

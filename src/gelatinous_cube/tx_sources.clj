@@ -3,18 +3,18 @@
 
 
 (defn dispatch
-  [conn norm-map]
-  (-> norm-map :tx-source first))
+  [_conn norm-map]
+  (:source-type norm-map))
 
 (defmulti tx-data-for-norm dispatch)
 
 (defmethod tx-data-for-norm :tx-data tx-data
   [_ norm-map]
-  (-> norm-map :tx-source second))
+  (:tx-source norm-map))
 
 (defmethod tx-data-for-norm :tx-resource tx-resource
   [_ norm-map]
-  (-> norm-map :tx-source second u/read-resource))
+  (-> norm-map :tx-source u/read-resource))
 
 (defn eval-tx-fn
   [conn tx-fn]
@@ -25,26 +25,36 @@
 
 (defmethod tx-data-for-norm :tx-fn tx-fn
   [conn norm-map]
-  (->> norm-map :tx-source second (eval-tx-fn conn)))
+  (->> norm-map :tx-source (eval-tx-fn conn)))
 
 
 (defn reorg-tx-sources
-  "If a key in the `norm-map` has a method implementation in
-  `tx-data-for-norm`, relocate it underneath a `:tx-source` key with a
-  vector conveying its dispatch type and value.
+  "If a key in `norm-map` has a method implementation in
+  `tx-data-for-norm`, relocate it to the val of a `:source-type` key,
+  with a sibling `:tx-source` key/val. That is, given a `norm-map`
+  of...
 
-  This allows the user's config to reference novel tx sources while
-  keeping config syntax as simple and terse as possible (i.e., user
-  does not have to provide an extraneous `type` key, or preserve
-  special structure) yet also gives `tx-data-for-norm` a dispatchable
-  value at a predictable coordinate."
+    {:name :some-name
+     :s3-file 's3://some-bucket/some-key'}
+
+  return...
+
+    {:name :some-name
+     :source-type :s3-file
+     :tx-source 's3://some-bucket/some-key'}
+
+  This allows the user's config to reference novel tx sources with
+  dispatchable values at predictable coordinates while keeping config
+  syntax as terse as possible.
+
+  If no key in `norm-map` has such a method impl, declare as invalid."
   [norm-map]
   (let [meths   (methods tx-data-for-norm)
         reorged (reduce-kv
                  (fn [acc k v]
                    (if (contains? meths k)
                      (reduced (-> acc
-                                  (assoc :tx-source [k v])
+                                  (assoc :source-type k :tx-source v)
                                   (dissoc k)))
                      acc))
                  norm-map
