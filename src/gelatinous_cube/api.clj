@@ -10,16 +10,15 @@
   (reduce
    (fn [acc {name :name :as norm-map}]
      (if (not (impl/needed? conn norm-map *tracking-attr*))
-       acc
+       (update acc :unneeded-norms (fnil conj []) name)
        (try
          (impl/transact-norm conn norm-map *tracking-attr*)
-         (conj acc name)
+         (update acc :succeeded-norms (fnil conj []) name)
          (catch Exception e
            (throw (ex-info "Norm failed to conform"
-                           {:succeeded-norms acc
-                            :failed-norm name}
+                           (assoc acc :failed-norm name)
                            e))))))
-   []
+   {}
    norm-maps))
 
 (defn norm-maps-by-name
