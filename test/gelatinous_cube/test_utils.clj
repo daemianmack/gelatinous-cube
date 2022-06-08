@@ -42,13 +42,11 @@
   [f]
   (let [client-opts (make-client-opts)
         db-client   (make-client client-opts)]
-    (println "Creating test DB:" (:db-name client-opts))
     (try
       (let [conn (init-test-db db-client client-opts)]
         (binding [*conn* conn]
           (f)))
       (finally
-        (println "Removing test DB:" (:db-name client-opts))
         (dl/release-db client-opts)))))
 
 (defn submap?
