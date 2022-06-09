@@ -2,10 +2,10 @@
   (:require [gelatinous-cube.impl :as impl]))
 
 
-(def ^:dynamic *tracking-attr* :gelatinous-cube/conformed)
+(def ^:dynamic *tracking-attr* :gelatinous-cube/absorbed)
 
 
-(defn ensure-norms
+(defn absorb-norms
   [conn norm-maps]
   (reduce
    (fn [acc {name :name :as norm-map}]
@@ -15,7 +15,7 @@
          (impl/transact-norm conn norm-map *tracking-attr*)
          (update acc :succeeded-norms (fnil conj []) name)
          (catch Exception e
-           (throw (ex-info "Norm failed to conform"
+           (throw (ex-info "Norm failed to absorb"
                            (assoc acc :failed-norm name)
                            e))))))
    {}
@@ -26,12 +26,11 @@
   (filter (comp (set names) :name)
           norm-maps))
 
-(defn ensure-conforms
-  ([conn norm-maps]
-   (ensure-conforms conn norm-maps (map :name norm-maps)))
-  ([conn norm-maps norm-names]
-   (let [ensurable-norms (-> norm-maps
-                             (norm-maps-by-name norm-names)
-                             impl/conform!)]
-    (impl/ensure-gelatinous-cube-schema conn *tracking-attr*)
-    (ensure-norms conn ensurable-norms))))
+(defn absorb
+  [conn {:keys [norm-maps only-norms]
+         :or {only-norms (map :name norm-maps)}}]
+  (let [adapted-norms (-> norm-maps
+                          (norm-maps-by-name only-norms)
+                          impl/adapt!)]
+    (impl/ensure-tracking-schema conn *tracking-attr*)
+    (absorb-norms conn adapted-norms)))

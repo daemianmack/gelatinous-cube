@@ -30,13 +30,13 @@
       seq
       boolean))
 
-(defn ensure-gelatinous-cube-schema
+(defn ensure-tracking-schema
   [conn tracking-attr]
   (when-not (has-attr? conn tracking-attr)
     (let [tx-data [{:db/ident tracking-attr
                     :db/valueType :db.type/keyword
                     :db/cardinality :db.cardinality/one
-                    :db/doc "Conformed norm name"}]]
+                    :db/doc "Tracks absorbed norms."}]]
       (tx! conn tx-data))))
 
 (defn transact-norm
@@ -51,7 +51,7 @@
   (or (:mutable norm-map)
       (not (has-norm? conn tracking-attr norm-map))))
 
-(defn conform!
+(defn adapt!
   [norm-maps]
   (if-not (s/valid? ::specs/norm-maps norm-maps)
     (u/anomaly! :incorrect
