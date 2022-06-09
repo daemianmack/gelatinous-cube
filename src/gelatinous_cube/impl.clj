@@ -30,21 +30,28 @@
       seq
       boolean))
 
-(defn ensure-tracking-schema
+(defn ensure-tracking-schema-tx-data
   [conn tracking-attr]
   (when-not (has-attr? conn tracking-attr)
-    (let [tx-data [{:db/ident tracking-attr
-                    :db/valueType :db.type/keyword
-                    :db/cardinality :db.cardinality/one
-                    :db/doc "Tracks absorbed norms."}]]
-      (tx! conn tx-data))))
+    [{:db/ident tracking-attr
+      :db/valueType :db.type/keyword
+      :db/cardinality :db.cardinality/one
+      :db/doc "Tracks absorbed norms."}]))
 
-(defn transact-norm
-  "Record having evaluated this norm and include any corresponding
-  transaction data."
+(defn ensure-tracking-schema!
+  [conn tracking-attr]
+  (when-let [tx-data (ensure-tracking-schema-tx-data conn tracking-attr)]
+    (tx! conn tx-data)))
+
+(defn transact-norm-tx-data
   [conn norm-map tracking-attr]
-  (tx! conn (into [{tracking-attr (:name norm-map)}]
-                  (tx-sources/tx-data-for-norm conn norm-map))))
+  (into [{tracking-attr (:name norm-map)}]
+        (tx-sources/tx-data-for-norm conn norm-map)))
+
+(defn transact-norm!
+  "Transact and record tracking attr for norm."
+  [conn norm-map tracking-attr]
+  (tx! conn (transact-norm-tx-data conn norm-map tracking-attr)))
 
 (defn needed?
   [conn norm-map tracking-attr]

@@ -12,7 +12,7 @@
      (if (not (impl/needed? conn norm-map *tracking-attr*))
        (update acc :unneeded-norms (fnil conj []) name)
        (try
-         (impl/transact-norm conn norm-map *tracking-attr*)
+         (impl/transact-norm! conn norm-map *tracking-attr*)
          (update acc :succeeded-norms (fnil conj []) name)
          (catch Exception e
            (throw (ex-info "Norm failed to absorb"
@@ -32,5 +32,5 @@
   (let [adapted-norms (-> norm-maps
                           (norm-maps-by-name only-norms)
                           impl/adapt!)]
-    (impl/ensure-tracking-schema conn *tracking-attr*)
+    (impl/ensure-tracking-schema! conn *tracking-attr*)
     (absorb-norms conn adapted-norms)))

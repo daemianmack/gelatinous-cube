@@ -95,7 +95,7 @@
 (deftest absorb-return-shape
   (is (= {:succeeded-norms all-norm-names}
          (sut/absorb tu/*conn* {:norm-maps config})))
-  (with-redefs [impl/transact-norm (fn [& _] (throw (ex-info "!" {})))]
+  (with-redefs [impl/transact-norm! (fn [& _] (throw (ex-info "!" {})))]
     (is (thrown-with-data?
          {:unneeded-norms immutable-norm-names
           :failed-norm (first mutable-norm-names)}
