@@ -70,8 +70,8 @@
 (deftest absorb-basic
   (let [idents-before (all-idents tu/*conn*)
         expected-new-idents (norm-idents tu/*conn* immutable-norm-maps)]
-    (is (= {:succeeded-norms all-norm-names}
-           (sut/absorb tu/*conn* {:norm-maps config})))
+    (is (tu/submap? (sut/absorb tu/*conn* {:norm-maps config})
+                    {:succeeded-norms all-norm-names}))
     (is (absorbed= tu/*conn* all-norm-names))
     (is (new-idents= tu/*conn* idents-before expected-new-idents))))
 
@@ -79,22 +79,22 @@
   (let [tx-count #(count (d/tx-range tu/*conn* {:start 0 :end 1e6}))
         tracking-attr-count 1
         absorbed-tx-count (+ (count all-norm-names)
-                              tracking-attr-count)
+                             tracking-attr-count)
         t1-tx-count (tx-count)]
-    (is (= {:succeeded-norms all-norm-names}
-           (sut/absorb tu/*conn* {:norm-maps config})))
+    (is (tu/submap? (sut/absorb tu/*conn* {:norm-maps config})
+                    {:succeeded-norms all-norm-names}))
     (let [t2-tx-count (tx-count)]
       (is (= (+ t1-tx-count absorbed-tx-count)
              t2-tx-count))
-      (is (= {:unneeded-norms immutable-norm-names
-              :succeeded-norms mutable-norm-names}
-             (sut/absorb tu/*conn* {:norm-maps config})))
+      (is (tu/submap? (sut/absorb tu/*conn* {:norm-maps config})
+                      {:unneeded-norms immutable-norm-names
+                       :succeeded-norms mutable-norm-names}))
       (is (= (+ t2-tx-count (count mutable-norm-names))
              (tx-count))))))
 
 (deftest absorb-return-shape
-  (is (= {:succeeded-norms all-norm-names}
-         (sut/absorb tu/*conn* {:norm-maps config})))
+  (is (tu/submap? (sut/absorb tu/*conn* {:norm-maps config})
+                  {:succeeded-norms all-norm-names}))
   (with-redefs [impl/transact-norm! (fn [& _] (throw (ex-info "!" {})))]
     (is (thrown-with-data?
          {:unneeded-norms immutable-norm-names
@@ -105,17 +105,17 @@
   (let [idents-before (all-idents tu/*conn*)
         expected-new-idents (norm-idents tu/*conn*
                                          (sut/norm-maps-by-name config [:base-schema]))]
-    (is (= {:succeeded-norms [:base-schema]}
-           (sut/absorb tu/*conn* {:norm-maps config
-                                  :only-norms [:base-schema]})))
+    (is (tu/submap? (sut/absorb tu/*conn* {:norm-maps config
+                                           :only-norms [:base-schema]})
+                    {:succeeded-norms [:base-schema]}))
     (is (absorbed= tu/*conn* [:base-schema]))
     (is (new-idents= tu/*conn* idents-before expected-new-idents))))
 
 (deftest absorb-custom-tracking-attr
   (let [custom-attr :custom/tracking-attr]
     (binding [sut/*tracking-attr* custom-attr]
-      (is (= {:succeeded-norms all-norm-names}
-             (sut/absorb tu/*conn* {:norm-maps config})))
+      (is (tu/submap? (sut/absorb tu/*conn* {:norm-maps config})
+                      {:succeeded-norms all-norm-names}))
       (is (absorbed= tu/*conn* (map :name config))))))
 
 (deftest absorb-respects-custom-tx-sources
@@ -128,9 +128,9 @@
     (defmethod tx-sources/tx-data-for-norm :tx-banans
       [_conn {payload :tx-source}]
       (decode payload))
-    (is (= {:succeeded-norms [:banans]}
-           (sut/absorb tu/*conn* {:norm-maps [{:name :banans :tx-banans (encode schema)}]
-                                  :only-norms [:banans]})))
+    (is (tu/submap? (sut/absorb tu/*conn* {:norm-maps [{:name :banans :tx-banans (encode schema)}]
+                                           :only-norms [:banans]})
+                    {:succeeded-norms [:banans]}))
     (remove-method tx-sources/tx-data-for-norm :tx-banans)
     (is (new-idents= tu/*conn* idents-before [sut/*tracking-attr* :banans]))
     (is (absorbed= tu/*conn* [:banans]))))

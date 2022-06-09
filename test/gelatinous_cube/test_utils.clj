@@ -62,7 +62,7 @@
   (let [expect-map (second form)
         body (nthnext form 2)]
     `(try ~@body
-          (t/do-report {:type :fail, :message ~msg, :expected '~form, :actual nil})
+          (t/do-report {:type :fail, :message ~msg, :expected '~form, :actual "Exception not thrown"})
           (catch clojure.lang.ExceptionInfo e#
             (let [m# (ex-data e#)]
               (if (submap? m# ~expect-map)

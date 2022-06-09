@@ -8,15 +8,17 @@
 (defn absorb-norms
   [conn norm-maps]
   (reduce
-   (fn [acc {name :name :as norm-map}]
+   (fn [acc {norm-name :name :as norm-map}]
      (if (not (impl/needed? conn norm-map *tracking-attr*))
-       (update acc :unneeded-norms (fnil conj []) name)
+       (update acc :unneeded-norms (fnil conj []) norm-name)
        (try
-         (impl/transact-norm! conn norm-map *tracking-attr*)
-         (update acc :succeeded-norms (fnil conj []) name)
+         (let [tx-result (impl/transact-norm! conn norm-map *tracking-attr*)]
+           (-> acc
+               (update :succeeded-norms (fnil conj []) norm-name)
+               (assoc-in [:tx-results norm-name] tx-result)))
          (catch Exception e
            (throw (ex-info "Norm failed to absorb"
-                           (assoc acc :failed-norm name)
+                           (assoc acc :failed-norm norm-name)
                            e))))))
    {}
    norm-maps))
