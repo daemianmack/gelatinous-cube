@@ -5,6 +5,13 @@
 (def ^:dynamic *tracking-attr* :gelatinous-cube/absorbed)
 
 
+(defn needed-norms
+  [conn {:keys [norm-maps]}]
+  (->> norm-maps
+       (filter (fn [norm-map]
+                 (impl/needed? conn norm-map *tracking-attr*)))
+       (map :name)))
+
 (defn absorb-norms
   [conn norm-maps]
   (reduce
