@@ -3,29 +3,32 @@
 
 
 (defn dispatch
-  [_conn norm-map]
+  [_conn _extras norm-map]
   (:source-type norm-map))
 
 (defmulti tx-data-for-norm dispatch)
 
 (defmethod tx-data-for-norm :tx-data tx-data
-  [_ norm-map]
+  [_ _ norm-map]
   (:tx-source norm-map))
 
 (defmethod tx-data-for-norm :tx-resource tx-resource
-  [_ norm-map]
+  [_ _ norm-map]
   (-> norm-map :tx-source u/read-resource))
 
 (defn eval-tx-fn
-  [conn tx-fn]
-  (try ((requiring-resolve tx-fn) conn)
+  [conn extras tx-fn]
+  (try (let [resolved-tx-fn (requiring-resolve tx-fn)]
+         (if (->> resolved-tx-fn var meta :arglists (some #(or (= '& (first %)) (>= (count %) 2))))
+           (resolved-tx-fn conn extras)
+           (resolved-tx-fn conn)))
        (catch Throwable t
          (throw (ex-info (str "Exception evaluating " tx-fn)
                          {:exception t})))))
 
 (defmethod tx-data-for-norm :tx-fn tx-fn
-  [conn norm-map]
-  (->> norm-map :tx-source (eval-tx-fn conn)))
+  [conn extras norm-map]
+  (->> norm-map :tx-source (eval-tx-fn conn extras)))
 
 
 (defn reorg-tx-sources
