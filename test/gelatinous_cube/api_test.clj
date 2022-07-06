@@ -46,7 +46,7 @@
 (defn norm-idents
   [conn norm-maps]
   (let [norm-maps (impl/adapt! norm-maps)
-        tx-data (mapcat (partial tx-sources/tx-data-for-norm conn)
+        tx-data (mapcat (partial tx-sources/tx-data-for-norm conn {})
                         norm-maps)]
     (conj (keep :db/ident tx-data)
           sut/*tracking-attr*)))
@@ -97,7 +97,10 @@
                   {:succeeded-norms all-norm-names}))
   (with-redefs [impl/transact-norm! (fn [& _] (throw (ex-info "!" {})))]
     (is (thrown-with-data?
-         {:unneeded-norms immutable-norm-names
+         {:unneeded-norms (->> config
+                               (partition-by :mutable)
+                               (first)
+                               (map :name))
           :failed-norm (first mutable-norm-names)}
          (sut/absorb tu/*conn* {:norm-maps config})))))
 
@@ -126,7 +129,7 @@
         encode (comp str/reverse pr-str)
         decode (comp edn/read-string str/reverse)]
     (defmethod tx-sources/tx-data-for-norm :tx-banans
-      [_conn {payload :tx-source}]
+      [_conn _extras {payload :tx-source}]
       (decode payload))
     (is (tu/submap? (sut/absorb tu/*conn* {:norm-maps [{:name :banans :tx-banans (encode schema)}]
                                            :only-norms [:banans]})
@@ -159,3 +162,13 @@
          {:succeeded-norms [:base-schema :add-user-zip]
           :failed-norm :add-user-data}
          (sut/absorb tu/*conn* {:norm-maps config})))))
+
+(deftest absorb-conveys-extras
+  (let [extras {:country-code "+7"}
+        absorb-result (sut/absorb tu/*conn* extras {:norm-maps config})
+        db-after (-> absorb-result :tx-results (get (last all-norm-names)) :db-after)
+        tels (map first
+                  (d/q '[:find ?tel :where [_ :user/tel ?tel]]
+                       db-after))]
+    (is (not-empty tels))
+    (is (every? #(str/starts-with? % "+7") tels))))

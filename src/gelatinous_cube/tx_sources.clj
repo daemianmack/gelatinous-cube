@@ -19,7 +19,7 @@
 (defn eval-tx-fn
   [conn extras tx-fn]
   (try (let [resolved-tx-fn (requiring-resolve tx-fn)]
-         (if (->> resolved-tx-fn var meta :arglists (some #(or (= '& (first %)) (>= (count %) 2))))
+         (if (->> resolved-tx-fn meta :arglists (some #(or (= '& (first %)) (>= (count %) 2))))
            (resolved-tx-fn conn extras)
            (resolved-tx-fn conn)))
        (catch Throwable t

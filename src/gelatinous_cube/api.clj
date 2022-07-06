@@ -38,10 +38,12 @@
           norm-maps))
 
 (defn absorb
-  [conn extras {:keys [norm-maps only-norms]
-                :or {only-norms (map :name norm-maps)}}]
-  (let [adapted-norms (-> norm-maps
-                          (norm-maps-by-name only-norms)
-                          impl/adapt!)]
-    (impl/ensure-tracking-schema! conn *tracking-attr*)
-    (absorb-norms conn extras adapted-norms)))
+  ([conn norms]
+   (absorb conn {} norms))
+  ([conn extras {:keys [norm-maps only-norms]
+                 :or {only-norms (map :name norm-maps)}}]
+   (let [adapted-norms (-> norm-maps
+                           (norm-maps-by-name only-norms)
+                           impl/adapt!)]
+     (impl/ensure-tracking-schema! conn *tracking-attr*)
+     (absorb-norms conn extras adapted-norms))))
