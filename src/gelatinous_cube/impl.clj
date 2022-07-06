@@ -44,14 +44,14 @@
     (tx! conn tx-data)))
 
 (defn transact-norm-tx-data
-  [conn norm-map tracking-attr]
+  [conn extras norm-map tracking-attr]
   (into [{tracking-attr (:name norm-map)}]
-        (tx-sources/tx-data-for-norm conn norm-map)))
+        (tx-sources/tx-data-for-norm conn extras norm-map)))
 
 (defn transact-norm!
   "Transact and record tracking attr for norm."
-  [conn norm-map tracking-attr]
-  (tx! conn (transact-norm-tx-data conn norm-map tracking-attr)))
+  [conn extras norm-map tracking-attr]
+  (tx! conn (transact-norm-tx-data conn extras norm-map tracking-attr)))
 
 (defn needed?
   [conn norm-map tracking-attr]
