@@ -32,6 +32,10 @@
   :tx-fn sample-tx-fns.fix-user-zip/migrate
   :mutable true}
 
+ ;; It's discovered that two people might share a telephone number.
+ {:name :un-unique-user-tel
+  :tx-data [[:db/retract :user/tel :db/unique :db.unique/value]]}
+
  ;; We're going international and decided to shard our DB by country. It's
  ;; time to add country codes to all phone numbers. Each migration execution
  ;; will be parameterized with the appropriate country code.

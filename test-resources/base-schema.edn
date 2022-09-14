@@ -17,6 +17,7 @@
 
  {:db/ident :user/tel
   :db/valueType :db.type/string
+  :db/unique :db.unique/value
   :db/cardinality :db.cardinality/one}
 
  ]
