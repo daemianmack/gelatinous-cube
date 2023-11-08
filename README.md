@@ -41,6 +41,10 @@ A sample config lives under `test-resources`.
   
 ### TODO
 
+##### Understand Cognitect anomalies
+  gelatinous-cube currently relies on exceptions to understand when to
+  abort transactions; it should also respect anomalies.
+
 ##### Want separable transaction data
   Conformity's data structure (see "Single transaction per norm")
   *also* accommodates handling especially-large tx data bodies as
