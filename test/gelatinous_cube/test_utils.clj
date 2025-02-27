@@ -1,7 +1,7 @@
 (ns gelatinous-cube.test-utils
   (:require [clojure.test :as t]
             [datomic.client.api :as d]
-            [datomic.dev-local :as dl])
+            [datomic.local :as local])
   (:import [java.util UUID]
            [java.io File]))
 
@@ -28,7 +28,7 @@
 
 (defn storage-dir!
   []
-  (let [dir (File. ".dev-local-storage")]
+  (let [dir (File. ".datomic-local-storage")]
     (.mkdir dir)
     (.getAbsolutePath dir)))
 
@@ -47,7 +47,7 @@
         (binding [*conn* conn]
           (f)))
       (finally
-        (dl/release-db client-opts)))))
+        (local/release-db client-opts)))))
 
 (defn submap?
   "Checks whether `m` contains all entries in `sub`."

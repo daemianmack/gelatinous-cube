@@ -72,7 +72,6 @@ A sample config lives under `test-resources`.
 
 ### Tests
 
-Tests can be run via `clj -A:test`. Thanks to `dev-local` these run
-against an in-memory Datomic Cloud database; you'll need to follow
-[setup instructions](https://docs.datomic.com/cloud/dev-local.html) to
-get the corresponding JAR.
+Tests can be run via `clj -M:test`. Thanks to [Datomic
+Local](https://docs.datomic.com/cloud/datomic-local.html) these run
+against an in-memory Datomic Cloud database.
