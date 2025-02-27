@@ -7,7 +7,7 @@
 
  :aliases {:test {:extra-paths ["test" "test-resources"]
                   :extra-deps  {com.datomic/client-cloud  {:mvn/version "1.0.120"}
-                                com.datomic/dev-local     {:mvn/version "1.0.243"}
+                                com.datomic/local         {:mvn/version "1.0.285"}
                                 com.cognitect/test-runner {:git/url "https://github.com/cognitect-labs/test-runner"
                                                            :sha     "a85b3b02765fb68684ab9ee4a8598eacf7e471d2"}}
                   :main-opts   ["-m" "cognitect.test-runner"
