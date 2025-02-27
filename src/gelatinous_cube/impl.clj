@@ -1,14 +1,36 @@
 (ns gelatinous-cube.impl
   (:require [gelatinous-cube.tx-sources :as tx-sources]
             [clojure.spec.alpha :as s]
-            [datomic.client.api :as d]
             [gelatinous-cube.specs :as specs]
             [gelatinous-cube.util :as u]))
 
+;; This currently appears necessary for this codebase to support not
+;; just Datomic Cloud but also Pro.
+;;
+;; Failed approach 1: Just use Datomic Client API for all operations,
+;; assuming it's sufficiently general that the user can pass in a
+;; `conn` created with Datomic Pro API. Turns out Datomic Client API
+;; uses protocols that Datomic Pro does not, so things
+;; like `(datomic.client.api/db conn)` fail.
+;;
+;; Failed approach 2: Requiring consumer use Datomic Client API
+;; directly to pass in an appropriate `conn`. This seems to require
+;; they use a Peer server at a minimum?
+;;
+;; This feels unholy but, it does seem to work.
+(try
+  (require '[datomic.client.api :as d])
+  (def flavor :cloud)
+  (catch Exception _
+    (require '[datomic.api :as d])
+    (def flavor :pro)))
 
 (defn tx!
   [conn tx-data]
-  (d/transact conn {:tx-data tx-data}))
+  (cond
+    (= :cloud flavor) (d/transact conn {:tx-data tx-data})
+    (= :pro flavor)   (d/transact conn tx-data)))
+
 
 (defn has-attr?
   [conn attr-name]
