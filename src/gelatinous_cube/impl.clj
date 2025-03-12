@@ -29,7 +29,7 @@
   [conn tx-data]
   (cond
     (= :cloud flavor) (d/transact conn {:tx-data tx-data})
-    (= :pro flavor)   (d/transact conn tx-data)))
+    (= :pro flavor)   @(d/transact conn tx-data)))
 
 
 (defn has-attr?
