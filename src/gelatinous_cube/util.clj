@@ -20,4 +20,4 @@
   (with-open [reader (->> (io/resource resource-name)
                           io/reader
                           (java.io.PushbackReader.))]
-    (edn/read reader)))
+    (edn/read {:readers *data-readers*} reader)))
